@@ -3,9 +3,12 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"github.com/kaustubhhub/authentication-gin-gonic/pkg/models"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -87,22 +90,9 @@ func (h *handler) GetUsers(c *gin.Context) {
 	})
 }
 
-package handlers
-
-import (
-	"net/http"
-	"os"
-	"time"
-
-	"github.com/gin-gonic/gin"
-	"github.com/kaustubhhub/authentication-gin-gonic/pkg/models"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/golang-jwt/jwt/v5"
-)
-
 func (h *handler) SignIn(c *gin.Context) {
-	var user models.User     
-	var isUser models.User    
+	var user models.User
+	var isUser models.User
 
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Validation failed"})
@@ -121,9 +111,9 @@ func (h *handler) SignIn(c *gin.Context) {
 
 	// Create JWT token
 	claims := jwt.MapClaims{
-		"username": isUser.Username,
+		"username":  isUser.Username,
 		"user_type": isUser.UserType,
-		"exp":      time.Now().Add(time.Hour * 24).Unix(), // token expires in 24 hours
+		"exp":       time.Now().Add(time.Hour * 24).Unix(), // token expires in 24 hours
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -148,4 +138,3 @@ func (h *handler) SignIn(c *gin.Context) {
 		"user_type": isUser.UserType,
 	})
 }
-
