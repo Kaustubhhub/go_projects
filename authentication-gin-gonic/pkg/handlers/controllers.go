@@ -109,20 +109,15 @@ func (h *handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	// Create JWT token
 	claims := jwt.MapClaims{
 		"username":  isUser.Username,
 		"user_type": isUser.UserType,
-		"exp":       time.Now().Add(time.Hour * 24).Unix(), // token expires in 24 hours
+		"exp":       time.Now().Add(time.Hour * 24).Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	// Secret key for signing (store in env variable in production)
 	secret := os.Getenv("JWT_SECRET")
-	if secret == "" {
-		secret = "defaultSecret" // fallback (not safe for production)
-	}
 
 	tokenString, err := token.SignedString([]byte(secret))
 	if err != nil {
@@ -130,7 +125,6 @@ func (h *handler) SignIn(c *gin.Context) {
 		return
 	}
 
-	// Success response
 	c.JSON(http.StatusOK, gin.H{
 		"message":   "Login successful",
 		"token":     tokenString,
